@@ -131,10 +131,10 @@ Required sections (markdown):
 - **Contextual placement:** {{specific lifestyle scene}}
 - **Embellishment macros:** {{which embellishments to feature}}
 
-## Audience persona
+## Audience persona  *(include only if selected in scope gate)*
 {{3–5 sentences. Who this is FOR, concretely. Age range, taste neighborhood, how they discover brands, what else lives in their wardrobe, what would make them pre-order vs. wait. Pull from the `audience` input + brand research; don't invent demographics that don't fit the brand world.}}
 
-## Commerce
+## Commerce  *(include only if selected in scope gate)*
 - **Distribution:** {{DTC drop / wholesale / pop-up / limited numbered run / open run / pre-order window — pick one or two, justify briefly}}
 - **Pricing tier:** {{rough MSRP per piece — e.g. Tee $58, Hoodie $148, Cap $48, Cardigan $245. Reflect the brief's quality register (heavyweight + hand-embroidered + small batch = higher; standard production = lower)}}
 - **Drop calendar:** {{sample → bulk production → QC → drop date → restock window → close. Concrete dates if known, relative weeks if not.}}
@@ -163,13 +163,100 @@ When filling each `BRIEF.md` section, pull vocabulary from these specific [`glos
 | `## Audience persona` | freeform — describe the wardrobe in glossary-grade vocabulary (§1–§3 for what else they wear) |
 | `## Commerce` | freeform — pricing tier reflects glossary-grade choices (heavyweight §1 + hand-embroidered §5 = premium tier) |
 
-**Gate:** Show the brief to the user and get sign-off before Phase 3. Generation costs credits — don't burn them on the wrong direction.
+### Brief sign-off gate
+
+After writing the draft, show the user the brief and ask:
+
+```
+AskUserQuestion(questions=[{
+  question: "Sign off on the brief and proceed to scope selection?",
+  header: "Approve brief",
+  multiSelect: false,
+  options: [
+    { label: "Approve — proceed to scope selection",
+      description: "Accept the brief as drafted. Next step is the scope-selection gate (which optional rounds / artifacts to include)." },
+    { label: "Tweak the brief first",
+      description: "Pause for you to revise the brief — palette, motifs, range plan, audience, commerce, or creative direction." },
+    { label: "Stop here",
+      description: "Accept the brief but skip all generation. Deliverable = BRIEF.md only." }
+  ]
+}])
+```
+
+Generation costs credits — don't burn them on the wrong direction.
 
 ---
 
 ## Phase 3 — Sequenced image generation pipeline
 
 **This is the most important part of the skill.** Each round builds on the last. Earlier rounds become *reference inputs* for later rounds via Higgsfield's `medias[]` parameter — passing prior `job_id`s in by reference keeps the visual world (location, fabric, embellishments, model identity) coherent across the whole deliverable.
+
+### Scope-selection gate — granular control over what to generate
+
+Before Preflight, ask the user which optional rounds and artifacts to include. The **core pipeline** (Rounds 0, 1, 2, 3, 4, 5, 6 + Phase 5 site composition) always runs once the brief is signed off. Everything else is opt-in.
+
+**Tier defaults** (these are the answer-pre-fills, not hard rules — the user can override anything):
+
+| Optional artifact | `quick` default | `standard` default | `deluxe` default |
+|---|---|---|---|
+| Round 1b — Mood board | ✓ | ✓ | ✓ |
+| Round 3b — Hangtag + packaging | — | ✓ | ✓ |
+| Round 4b — Wholesale sell-sheet | — | ✓ | ✓ |
+| Round 7 — Hero video | ✓ | ✓ | ✓ |
+| Round 8 — Social cuts (2× 9:16) | — | ✓ | ✓ |
+| `TECHPACK.md` (manufacturer-side spec doc) | — | ✓ | ✓ |
+
+Always-included regardless of selection: Rounds 0, 1, 2, 3, 4, 5, 6 + `BRIEF.md` + `INDEX.md` + `index.html` + `og.png` + real brand logo. The new BRIEF.md sections (`## Audience persona`, `## Commerce`) ride along with TECHPACK selection — if the user wants the production doc, they get the strategy sections too; if they don't, those sections are omitted to keep the brief lean.
+
+**The scope-selection question** (call this immediately after the brief sign-off):
+
+```
+AskUserQuestion(questions=[
+  {
+    question: "Optional image rounds to include?",
+    header: "Image rounds",
+    multiSelect: true,
+    options: [
+      { label: "Mood board (visualize references)",
+        description: "Round 1b — single composite image of the brief's References pinned to a studio wall. ~3 credits." },
+      { label: "Hangtag + packaging concept",
+        description: "Round 3b — first customer touchpoint. Tag macro + box / poly bag arrangement. ~4 credits." },
+      { label: "Wholesale sell-sheet variant",
+        description: "Round 4b — B2B framing of the line sheet with MSRP / MOQ / lead-time annotations. ~4 credits." }
+    ]
+  },
+  {
+    question: "Motion / video output?",
+    header: "Video",
+    multiSelect: false,
+    options: [
+      { label: "Hero video + 2 social cuts (full motion)",
+        description: "Round 7 hero video (5s, 16:9) + Round 8 social cuts (2× 9:16 verticals for TikTok / IG Reels). ~45 credits." },
+      { label: "Hero video only",
+        description: "Round 7 only — 5s cinematic clip for the website hero. ~15 credits." },
+      { label: "Skip video — stills only",
+        description: "No video output. Website hero uses the Round 6 still as a static image." }
+    ]
+  },
+  {
+    question: "Production + strategy artifacts?",
+    header: "Production",
+    multiSelect: true,
+    options: [
+      { label: "TECHPACK.md — manufacturer-side production spec",
+        description: "Per-SKU production document (measurements, BOM, embellishment placements, labels, hardware, hangtag, packaging, est. FOB, regulatory). Zero generation credits — markdown only." },
+      { label: "BRIEF.md ## Audience persona section",
+        description: "3-5 sentence paragraph describing the customer concretely. Zero credits." },
+      { label: "BRIEF.md ## Commerce section",
+        description: "Distribution strategy / pricing tier (MSRP per SKU) / drop calendar. Zero credits." }
+    ]
+  }
+])
+```
+
+After the user answers, **surface the resulting cost estimate** (preflight section below uses the selected scope) and proceed with only the selected rounds. Rounds the user did not select are silently skipped in Phase 3 — don't fire them and don't include them in `INDEX.md`.
+
+If the user re-prompts mid-run with "skip the wholesale sheet" or "add a hangtag after all," honor it inline without re-asking — they've shown they want granular control.
 
 **Do not fire everything in parallel.** Each round must complete before the next starts. Within a round, fire calls in parallel; between rounds, poll the previous round to completion first.
 
@@ -261,9 +348,15 @@ Passing references **does not lock the output to the reference** — it conditio
 
 ### Preflight
 
-Before Round 0, **preflight cost** on one representative `nano_banana_pro` call (`get_cost: true`) at 4:5 2k AND at 16:9 4k so the spread is visible. Check `balance`. Surface the total spend estimate (~32 / 46 / 62 credits at default resolution policy; ~56 / 84 / 120 if pushing every round to 4k). Get a go-ahead.
+After the scope-selection gate, **preflight cost** on representative calls (`get_cost: true`):
+- `nano_banana_pro` 4:5 2k (most still rounds)
+- `nano_banana_pro` 16:9 4k (line sheet, hero, wholesale)
+- `seedance_2_0` 16:9 5s (hero video) — only if video was selected
+- `seedance_2_0` 9:16 5s (social cuts) — only if social was selected
 
-Every `generate_image` call in every round should include `resolution` per the table above — `'2k'` is the default for most rounds, `'4k'` for Round 4 (line sheet) and Round 6 (hero). If the user said "max quality", set every call to `'4k'`.
+Check `balance`. **Compute the total spend estimate from the scope-selection answers** (not the full tier counts) — adding up only the rounds the user actually selected. Surface the number to the user and get a final go-ahead before firing any generation.
+
+Every `generate_image` call in every round should include `resolution` per the table above — `'2k'` is the default for most rounds, `'4k'` for Round 4 (line sheet), Round 4b (wholesale), and Round 6 (hero). If the user said "max quality", set every still call to `'4k'` and bump the credit estimate accordingly. Video uses `seedance_2_0` at default settings.
 
 **Use [`glossary.md`](./glossary.md) for every prompt's technical vocabulary.** Embellishments come from §5–6, fabrics from §1–2, fits from §3, construction from §4, finishes from §7, trims from §8. Lighting/lens clauses for portrait and lookbook prompts come from §10. Don't keyword-stuff — 2–4 specific terms per prompt clause is the sweet spot.
 
@@ -308,7 +401,7 @@ Fire 1–3 location prompts in parallel. **Poll all to completion** before Round
 
 ---
 
-### Round 1b — Mood board
+### Round 1b — Mood board *(optional — skip if not selected in scope gate)*
 
 A single composite image that *visualizes* the brief's `## References` section. The Magnum-Opus wallpaper move: a grid of reference imagery (other brands' pieces, archival photography, vintage media, landscape, type specimens, fabric swatches) arranged like a moodboard pinned to a studio wall. **Does NOT depend on prior rounds** — fires in parallel with Round 1.
 
@@ -387,7 +480,7 @@ Fire all SKU mockups in parallel. **Poll to completion.** These job_ids become t
 
 ---
 
-### Round 3b — Hangtag + packaging concept
+### Round 3b — Hangtag + packaging concept *(optional — skip if not selected in scope gate)*
 
 The first physical touchpoint a customer has with the brand. Currently most merch decks mention the hangtag in the brief but never render it — this round closes that gap. Generates the hangtag plus a packaging concept (poly bag with woven label, branded box, tissue paper, sticker pack — pick what fits the brief's tier).
 
@@ -440,7 +533,7 @@ Fire as a single call. **Poll to completion.**
 
 ---
 
-### Round 4b — Wholesale sell-sheet *(standard / deluxe only)*
+### Round 4b — Wholesale sell-sheet *(optional — skip if not selected in scope gate)*
 
 A B2B variant of the line sheet for retail-buyer conversations. Same composition language as Round 4 but annotated with wholesale pricing, MOQ, lead time, and SKU codes. Buyers care about different information than customers — this round gives the deck a sell-in surface alongside the sell-through one.
 
@@ -551,7 +644,7 @@ Fire. Poll to completion.
 
 ---
 
-### Round 7 — Hero video
+### Round 7 — Hero video *(optional — skip if "Skip video" was selected in scope gate)*
 
 A 5-second cinematic motion clip animating the Round 6 hero still. This is what plays as the website's full-bleed hero (autoplay, muted, loop). Subtle motion only — a slow push-in / dolly / horizontal pan / gentle wind through the garment / model continuing a walk-cycle. **Never a literal cut or camera move that breaks the still's composition.** If the still works, the video should feel like the still came alive.
 
@@ -583,7 +676,7 @@ Fire after Round 6 completes. **Poll to completion.** Video jobs take 60–180s 
 
 ---
 
-### Round 8 — Social cuts *(standard / deluxe only)*
+### Round 8 — Social cuts *(optional — only if "full motion package" was selected in scope gate)*
 
 Two 9:16 vertical clips for TikTok / Instagram Reels. Same motion grammar as Round 7 but in vertical framing, designed for thumb-stopping social. **Composite from the same references** — the Cast portrait, the Round 6 hero (as a still + intent reference), and a Round 1 location.
 
@@ -682,9 +775,11 @@ In the working folder, write these files plus the logo and fonts:
     └── <MonoFamily>.ttf
 ```
 
-### 5a — `TECHPACK.md` (manufacturer-side production spec)
+### 5a — `TECHPACK.md` (manufacturer-side production spec) *(optional — only if selected in scope gate)*
 
 Where `BRIEF.md` is creative-side (the contract with the design team), `TECHPACK.md` is production-side (the contract with the cut-and-sew factory). It's the document a manufacturer can quote against and start sampling from.
+
+**Skip this file entirely if the user did not select TECHPACK.md in the scope gate.** Don't write a half-baked version.
 
 Required sections:
 
