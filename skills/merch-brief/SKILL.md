@@ -10,17 +10,22 @@ End-to-end skill for producing a bespoke branded-merch concept package and shipp
 The full deliverable, end to end, in one pass:
 
 1. **Brand research** — Higgsfield brand-kit fetch + supplementary web research
-2. **Creative brief** — `BRIEF.md` (palette, motifs, range plan, embellishment plan) — *gated on user approval*
-3. **Sequenced image pipeline** — 7 sequential rounds, all on `nano_banana_pro`, each one using prior rounds as `medias[]` references:
+2. **Creative brief** — `BRIEF.md` (palette, motifs, range plan, embellishment plan, audience persona, commerce notes) — *gated on user approval*
+3. **Sequenced image pipeline** — sequential rounds on `nano_banana_pro` (stills) + `seedance_2_0` (video), each one using prior rounds as `medias[]` references:
    0. Cast (portrait refs for male + female stand-in models)
    1. Location plates (empty environments)
+   1b. Mood board (composite of brief references)
    2. Brand mnemonics (wordmark / motif / palette tile on swatch)
-   3. Piece mockups (each SKU as a flat-lay product hero, referencing the mnemonics)
-   4. Line sheet (gridded composite, referencing all mockups)
-   5. Model-in-environment lookbook (Cast portrait + location + mockup)
-   6. Hero image (cinematic 16:9 — Cast portrait + location + hero-piece mockup)
+   3. Piece mockups (each SKU as a flat-lay product hero)
+   3b. Hangtag + packaging concept
+   4. Line sheet (gridded composite of mockups)
+   4b. Wholesale sell-sheet (B2B variant of the line sheet, MOQ/pricing annotated)
+   5. Model-in-environment lookbook
+   6. Hero image (cinematic 16:9 still)
+   7. Hero video (~10s cinematic motion clip)
+   8. Social cuts (2× 9:16 video for TikTok / IG Reels)
 4. **Real brand logo** — pulled from Higgsfield brand-kit OR Wikimedia Commons fallback
-5. **Branded site** — `index.html` (single-page), `og.png` (1200×630 social card), `BRIEF.md`, `INDEX.md`
+5. **Branded site + supporting docs** — `index.html` (single-page, video embedded), `og.png`, `BRIEF.md`, `TECHPACK.md` (manufacturer-side specs), `INDEX.md` (job-ID gallery)
 6. **Ship** *(optional, gated)* — private GitHub repo + Vercel deploy
 
 ## When to use
@@ -126,8 +131,17 @@ Required sections (markdown):
 - **Contextual placement:** {{specific lifestyle scene}}
 - **Embellishment macros:** {{which embellishments to feature}}
 
+## Audience persona
+{{3–5 sentences. Who this is FOR, concretely. Age range, taste neighborhood, how they discover brands, what else lives in their wardrobe, what would make them pre-order vs. wait. Pull from the `audience` input + brand research; don't invent demographics that don't fit the brand world.}}
+
+## Commerce
+- **Distribution:** {{DTC drop / wholesale / pop-up / limited numbered run / open run / pre-order window — pick one or two, justify briefly}}
+- **Pricing tier:** {{rough MSRP per piece — e.g. Tee $58, Hoodie $148, Cap $48, Cardigan $245. Reflect the brief's quality register (heavyweight + hand-embroidered + small batch = higher; standard production = lower)}}
+- **Drop calendar:** {{sample → bulk production → QC → drop date → restock window → close. Concrete dates if known, relative weeks if not.}}
+- **Inventory depth (optional):** {{rough buy depth per SKU × size if the brief is for a production run, not just a concept}}
+
 ## References
-- ... 3–6 references (other brands, eras, specific past collections)
+- ... 3–6 references (other brands, eras, specific past collections, films, music, places)
 
 ## Trademark fidelity note
 The {{brand}} mark and wordmark in generated images will be approximate — these are concept renders for direction approval. Real artwork applied by a designer with the official brand kit.
@@ -146,6 +160,8 @@ When filling each `BRIEF.md` section, pull vocabulary from these specific [`glos
 | `## Embellishment plan` | §5 (Embroidery), §6 (Print methods), §8 (Trims & hardware) |
 | `## Range plan` | per row: §1 (weight), §2 (weave), §3 (fit), §5/§6 (embellishment), §7 (wash) |
 | `## Lookbook & context direction` | §10 (Photography & lighting) for the lighting + lens grammar |
+| `## Audience persona` | freeform — describe the wardrobe in glossary-grade vocabulary (§1–§3 for what else they wear) |
+| `## Commerce` | freeform — pricing tier reflects glossary-grade choices (heavyweight §1 + hand-embroidered §5 = premium tier) |
 
 **Gate:** Show the brief to the user and get sign-off before Phase 3. Generation costs credits — don't burn them on the wrong direction.
 
@@ -158,14 +174,25 @@ When filling each `BRIEF.md` section, pull vocabulary from these specific [`glos
 **Do not fire everything in parallel.** Each round must complete before the next starts. Within a round, fire calls in parallel; between rounds, poll the previous round to completion first.
 
 ```
-Round 0 — Cast            (portrait refs, male + female)   ──┐
-Round 1 — Locations       (env. plates)                    ──┤
-Round 2 — Brand mnemonics (motifs, palette)                ──┼─→ medias[] in Round 3
-Round 3 — Piece mockups   (flat-lay heroes)                ──┼─→ medias[] in 4, 5, 6
-Round 4 — Line sheet      (gridded composite of mockups)   ──┤
-Round 5 — Model in env.   (Cast + Location + Mockup)       ──┤
-Round 6 — Hero image      (Cast + Location + hero Mockup)  ──┘
+Round 0  — Cast              (portrait refs, male + female) ──┐
+Round 1  — Locations         (env. plates)                  ──┤
+Round 1b — Mood board        (composite of brief refs)      ──┤
+Round 2  — Brand mnemonics   (motifs, palette)              ──┼─→ medias[] in Round 3, 3b
+Round 3  — Piece mockups     (flat-lay heroes)              ──┼─→ medias[] in 4, 4b, 5, 6
+Round 3b — Hangtag + packaging concept                      ──┤
+Round 4  — Line sheet        (gridded composite)            ──┼─→ medias[] in 4b
+Round 4b — Wholesale sell-sheet (B2B variant of 4)          ──┤
+Round 5  — Model in env.     (Cast + Location + Mockup)     ──┤
+Round 6  — Hero image still  (Cast + Location + hero Mock)  ──┼─→ medias[] in 7, 8
+Round 7  — Hero video        (motion from Round 6 still)    ──┤
+Round 8  — Social cuts       (2× 9:16 from Rounds 0,3,6)    ──┘
 ```
+
+**Sub-rounds (1b, 3b, 4b) fire in parallel with their parent** when their references are ready:
+- Round 1b mood board has no upstream dependencies → fires alongside Round 1
+- Round 3b hangtag/packaging needs Round 2 mnemonics → fires alongside Round 3
+- Round 4b wholesale sheet needs Round 4 line sheet → fires immediately after Round 4 (alone — different prompt)
+- Rounds 7 + 8 (video) need Round 6 still done → fire after Round 6, in parallel with each other
 
 **One model handles all of it: `nano_banana_pro`.** It accepts unlimited references via `medias[]` and is provably good at compositing — Round 4 pulls every Round 3 mockup into one coherent line sheet, and Rounds 5/6 pull a Cast portrait + Round 1 location + Round 3 mockup into one coherent lookbook frame. Same trick, same model, top to bottom.
 
@@ -177,16 +204,22 @@ Round 6 — Hero image      (Cast + Location + hero Mockup)  ──┘
 |---|---|---|---|---|
 | 0 | Cast — portrait refs *per character × 2 characters* | 2 + 2 | 3 + 3 | 4 + 4 |
 | 1 | Location plates | 1 | 2 | 3 |
+| 1b | Mood board | 1 | 1 | 1 |
 | 2 | Brand mnemonics | 2 | 3 | 4 |
 | 3 | Piece mockups | 4 | 6 | 9 |
+| 3b | Hangtag + packaging | 1 | 2 | 2 |
 | 4 | Line sheet *(4k)* | 1 | 1 | 1 |
+| 4b | Wholesale sell-sheet | 0 | 1 | 1 |
 | 5 | Model in environment | 1 | 2 | 3 |
-| 6 | Hero *(4k)* | 1 | 1 | 1 |
-| **Total images** | | **14** | **21** | **30** |
-| **Credits at default res (2k everywhere + 4k for line sheet & hero)** | | **~32** | **~46** | **~62** |
-| **Credits at max res (4k everywhere)** | | **~56** | **~84** | **~120** |
+| 6 | Hero still *(4k)* | 1 | 1 | 1 |
+| 7 | Hero video *(`seedance_2_0`, 5s)* | 1 | 1 | 1 |
+| 8 | Social cuts *(`seedance_2_0`, 5s 9:16)* | 0 | 2 | 2 |
+| **Total stills** | | **15** | **23** | **31** |
+| **Total videos** | | **1** | **3** | **3** |
+| **Credits — default res policy** | | **~50** | **~95** | **~115** |
+| **Credits — max res (every still at 4k)** | | **~74** | **~133** | **~173** |
 
-Default resolution policy raises every round to `2k` (same cost as 1k) and bumps the line sheet + hero to `4k` for ~4 extra credits total — they're the two images that bear the most attention. If the user says "max quality", push every round to `4k` and budget accordingly.
+Video is ~15 credits per 5-second clip on `seedance_2_0`, image stills as before. The default policy keeps every still at `2k` (same cost as 1k), bumps line sheet + hero + wholesale to `4k`, and fires the video rounds with `seedance_2_0` at 5s. If the user says "max quality", push every still to `4k` and budget accordingly.
 
 ### Model routing (applies to all rounds)
 
@@ -275,6 +308,27 @@ Fire 1–3 location prompts in parallel. **Poll all to completion** before Round
 
 ---
 
+### Round 1b — Mood board
+
+A single composite image that *visualizes* the brief's `## References` section. The Magnum-Opus wallpaper move: a grid of reference imagery (other brands' pieces, archival photography, vintage media, landscape, type specimens, fabric swatches) arranged like a moodboard pinned to a studio wall. **Does NOT depend on prior rounds** — fires in parallel with Round 1.
+
+This is the round where the brand-world references stop being a bullet list and become a single image you can hand to a designer.
+
+- **Model:** `nano_banana_pro`
+- **Aspect:** `4:3`
+- **Resolution:** `2k`
+- **Cost:** ~2–4 credits
+- **Count:** 1
+- **References:** none — pure prompt-driven composite
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §10 for the "shot on a studio wall" framing if used; §1–§2 for any visible fabric swatches; §9 for any visible type specimens.
+
+**Prompt template:**
+> Studio mood-board composite, top-down photograph of a corkboard or studio wall covered in pinned references for the {{brand}} {{occasion}} merch capsule. Arranged in a loose grid: {{6–10 specific references from the brief's `## References` list — describe each concretely, not by brand name where possible: "vintage 1970s racing-paddock photograph", "Mediterranean leisure editorial spread", "raw selvedge denim swatch", "weathered enamel pin", "italic condensed type specimen", "palm-shadow film still", etc.}}. Pins, masking tape corners, slight overlap between cards, soft top-down studio light. The board reads as the visual brain of the line — neutral background, no logos, no people centered. Editorial design-studio quality.
+
+Fire as a single call. **Poll to completion.**
+
+---
+
 ### Round 2 — Brand mnemonics
 
 The design system, rendered as physical artifacts. These set the visual language — fabric color, thread texture, motif rendering, embellishment treatment — that Round 3 will use as `medias[]` references for piece-level consistency.
@@ -333,6 +387,30 @@ Fire all SKU mockups in parallel. **Poll to completion.** These job_ids become t
 
 ---
 
+### Round 3b — Hangtag + packaging concept
+
+The first physical touchpoint a customer has with the brand. Currently most merch decks mention the hangtag in the brief but never render it — this round closes that gap. Generates the hangtag plus a packaging concept (poly bag with woven label, branded box, tissue paper, sticker pack — pick what fits the brief's tier).
+
+Fires in parallel with Round 3 (mockups). Both depend on Round 2 mnemonics.
+
+- **Model:** `nano_banana_pro`
+- **Aspect:** `1:1`
+- **Resolution:** `2k`
+- **Cost:** ~2 credits each
+- **Count:** 1 (quick) / 2 (standard, deluxe) — first image is the hangtag, second is the packaging arrangement
+- **References:** Round 2 wordmark mnemonic + Round 2 motif mnemonic (in `medias[]`) so the typography and colors carry through
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §8 (Trims & hardware — hangtag, jacron, leather patch, debossing, woven label, grosgrain), §9 (Typography & display — wordmark treatment), §1 (paper / fabric weights if the tag is a heavy stock), §10 (raked side-light for the embellishment macro feel).
+
+**Prompt template — hangtag:**
+> Macro studio photograph of a single {{material — kraft card / coated card / leather / canvas-and-jacron / woven}} hangtag for the {{brand}} {{occasion}} merch capsule, lying on a {{neutral backdrop color from brief}} seamless backdrop. The tag is {{shape — rectangular / die-cut diamond / rounded-corner}}, {{size — 5×8cm / 6×10cm}}, attached to a {{cotton string / waxed-cotton cord / metal split-ring}}. Front side reads {{exact text from brief — brand wordmark + property name + edition mark + coordinates if applicable}} in {{display family from brief}}. Back side (visible at an angle) shows {{mono spec line from §1: fabric · weight · made-in}}. {{Surface treatment — debossed / hot-foil / printed / embroidered}} where appropriate. Raked side-light from upper-left for depth. Sharp focus on every letterform. Editorial catalog quality.
+
+**Prompt template — packaging arrangement** *(standard/deluxe only):*
+> Studio photograph of the {{brand}} {{occasion}} packaging arrangement on a {{neutral}} seamless backdrop, slightly angled overhead view. The composition shows: {{tier-appropriate package — e.g. a folded garment inside an open branded box with tissue paper, a poly bag with a woven label, a sticker pack, a wrapped care card / a heritage-tier wooden crate with branded tissue / a paddock-style courier mailer with sponsor strip}}. Brand wordmark visible on the box lid / poly bag / tissue paper. Tonal palette pulled from the brief — no extra colors. Soft directional light, editorial product styling. The arrangement reads as if the customer just opened it. No hands, no people.
+
+Fire in parallel with Round 3 mockups. **Poll to completion** with the rest of that batch.
+
+---
+
 ### Round 4 — Line sheet
 
 The gridded composite. One image, all SKUs visible. References all Round 3 mockups via `medias[]` so the line sheet *matches* the individual pieces instead of drifting into a different visual rendering of them.
@@ -359,6 +437,27 @@ The gridded composite. One image, all SKUs visible. References all Round 3 mocku
 The reference quality bar: a wholesale tech-pack page from a heritage merch agency — clean enough to send to a manufacturer.
 
 Fire as a single call. **Poll to completion.**
+
+---
+
+### Round 4b — Wholesale sell-sheet *(standard / deluxe only)*
+
+A B2B variant of the line sheet for retail-buyer conversations. Same composition language as Round 4 but annotated with wholesale pricing, MOQ, lead time, and SKU codes. Buyers care about different information than customers — this round gives the deck a sell-in surface alongside the sell-through one.
+
+Fires immediately after Round 4 completes, taking the Round 4 line sheet as a `medias[]` reference so the composition matches.
+
+- **Model:** `nano_banana_pro`
+- **Aspect:** `4:3`
+- **Resolution:** `4k` (B2B PDF readability)
+- **Cost:** ~4 credits
+- **Count:** 1
+- **References:** Round 4 line sheet job_id in `medias[]`
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §1 (weight for the spec callouts), §2 (weave), §7 (wash) — same vocabulary as Round 4, with commerce annotations from `BRIEF.md` `## Commerce` (MSRP × 0.5 = rough wholesale; MOQ = brief-specified or 24 units default).
+
+**Prompt template:**
+> Wholesale sell-sheet for the {{brand}} {{occasion}} merch capsule, formatted as a B2B trade-show document. Same flat-lay grid composition as the reference line sheet, on a {{neutral backdrop from brief}} seamless backdrop, but with **expanded mono spec annotations under each piece**: SKU code (e.g. "RBAR-001-RJ-FOR"), wholesale price USD, MOQ, lead time in weeks, available colorways, available sizes. A small header bar at the top reads "{{Brand}} {{Occasion}} · Wholesale Line Sheet · {{Season}}" in mono. A footer line reads "Contact: {{contact placeholder}} · MOQ subject to availability · Lead time from PO". No models, no hands, even top-down studio light. Buyer-grade reference quality, designed to be printed at A4 / Letter.
+
+Fire as a single call after Round 4 lands. **Poll to completion.**
 
 ---
 
@@ -452,6 +551,80 @@ Fire. Poll to completion.
 
 ---
 
+### Round 7 — Hero video
+
+A 5-second cinematic motion clip animating the Round 6 hero still. This is what plays as the website's full-bleed hero (autoplay, muted, loop). Subtle motion only — a slow push-in / dolly / horizontal pan / gentle wind through the garment / model continuing a walk-cycle. **Never a literal cut or camera move that breaks the still's composition.** If the still works, the video should feel like the still came alive.
+
+- **Model:** `seedance_2_0` (reference-driven, strong identity preservation — uses the hero still as `start_image`)
+- **Aspect:** `16:9`
+- **Duration:** `5` seconds
+- **Cost:** ~15 credits
+- **Count:** 1
+- **References:** Round 6 hero still job_id as `start_image` in `medias[]`
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §10 for the motion grammar (slow push-in, subtle parallax, golden-hour breeze, walk-cycle continuation).
+
+**Prompt template:**
+> {{Motion type — gentle slow push-in toward the subject / horizontal dolly tracking with the subject / subtle parallax of foreground vs background / soft breeze rippling the garment / model continues mid-step from the still}}. Hold the same composition, lighting, palette, and subject as the start image. Keep the {{atmospheric brand cue from the hero — small aircraft / vehicle in distance / signage / road cases — described as appearing in its original position}} stable through the clip. Subtle film grain throughout, no harsh cuts, no zoom-bursts, no camera shake. 5-second clip designed to loop seamlessly. Editorial cinematic register.
+
+**MCP call shape:**
+```
+mcp__higgsfield__generate_video(params={
+  model: 'seedance_2_0',
+  aspect_ratio: '16:9',
+  duration: 5,
+  prompt: '<built from template>',
+  medias: [
+    { value: '<Round 6 hero still job_id>', role: 'start_image' }
+  ]
+})
+```
+
+Fire after Round 6 completes. **Poll to completion.** Video jobs take 60–180s — much longer than image jobs.
+
+---
+
+### Round 8 — Social cuts *(standard / deluxe only)*
+
+Two 9:16 vertical clips for TikTok / Instagram Reels. Same motion grammar as Round 7 but in vertical framing, designed for thumb-stopping social. **Composite from the same references** — the Cast portrait, the Round 6 hero (as a still + intent reference), and a Round 1 location.
+
+Variants:
+1. **Clip A — character-in-motion**: hero garment in vertical frame, character walks toward camera in the Round 1 location with the atmospheric brand cue visible. Short 5s loop.
+2. **Clip B — embellishment macro motion**: tight 9:16 crop on the signature embellishment (chain-stitch detail / sponsor patches / chenille / etc.), slight push-in or tilt revealing the depth of the thread.
+
+- **Model:** `seedance_2_0`
+- **Aspect:** `9:16`
+- **Duration:** `5` seconds each
+- **Cost:** ~15 credits each (~30 total)
+- **Count:** 2
+- **References:**
+  - **Clip A:** Cast portrait + Round 1 location + Round 3 hero mockup
+  - **Clip B:** Round 3 hero mockup (or whichever piece carries the signature embellishment)
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §10 for the motion + lens grammar; §5/§6 for the embellishment vocabulary in Clip B.
+
+**Prompt template — Clip A (character-in-motion):**
+> Vertical 9:16 cinematic 5-second clip. The character from the portrait reference walks toward camera in {{Round 1 location described concretely}}, wearing the {{Round 3 hero piece described from the mockup}}. {{Motion type — gentle slow push-in / handheld walk-cycle / static frame with subject approaching}}. {{Light direction matching Round 1 plate}}. The atmospheric brand cue from the brief — {{small / distant / peripheral cue}} — visible behind the subject. Subtle film grain, no zoom-bursts, no harsh cuts. Designed to loop. Editorial register.
+
+**Prompt template — Clip B (embellishment macro):**
+> Vertical 9:16 macro motion clip, 5 seconds. Tight close-up on {{the signature embellishment from the brief — chain-stitch roundel / sponsor-patch constellation / chenille letterforms / discharge-print graphic / etc.}} on the {{fabric from the hero piece}}. {{Motion type — slow push-in / slight horizontal tilt / raked-light gradient passing across the surface}} revealing the depth of the thread loops / weave / ink layer. Soft directional light from the {{light direction}}. Sharp focus throughout. No cuts. Designed to loop. Editorial atelier macro register.
+
+**MCP call shape (per clip):**
+```
+mcp__higgsfield__generate_video(params={
+  model: 'seedance_2_0',
+  aspect_ratio: '9:16',
+  duration: 5,
+  prompt: '<built from template>',
+  medias: [
+    /* Clip A: cast portrait + location + mockup */
+    /* Clip B: mockup of the piece carrying the embellishment */
+  ]
+})
+```
+
+Fire both in parallel after Round 6 completes. **Poll to completion** — video jobs take 60–180s.
+
+---
+
 ### Polling pattern (every round)
 
 After issuing the round's parallel calls, poll each `job_id` with:
@@ -493,22 +666,92 @@ For the site nav and any "real-brand" lockups, use the **actual** logo file, not
 
 ## Phase 5 — Compose the deliverable
 
-In the working folder, write four files plus the logo and fonts:
+In the working folder, write these files plus the logo and fonts:
 
 ```
 ~/Documents/merch-briefs/<brand-slug>-<YYYY-MM-DD>/
-├── BRIEF.md           ← from Phase 2
-├── INDEX.md           ← gallery of all job IDs + prompts
-├── index.html         ← branded single-page site (this phase)
-├── og.png             ← 1200×630 social share card (this phase)
+├── BRIEF.md           ← from Phase 2 (palette, motifs, range, audience, commerce)
+├── TECHPACK.md        ← manufacturer-side production spec (this phase)
+├── INDEX.md           ← gallery of all job IDs + prompts (incl. video clips)
+├── index.html         ← branded single-page site (video embedded in hero)
+├── og.png             ← 1200×630 social share card
 ├── build_og.py        ← script that builds og.png
-├── logo-<brand>.svg   ← from Phase 5
+├── logo-<brand>.svg   ← from Phase 4
 └── fonts/             ← brand-chosen display + label TTFs (see 5b for selection)
     ├── <DisplayFamily-Style>.ttf
     └── <MonoFamily>.ttf
 ```
 
-### 5a — `INDEX.md`
+### 5a — `TECHPACK.md` (manufacturer-side production spec)
+
+Where `BRIEF.md` is creative-side (the contract with the design team), `TECHPACK.md` is production-side (the contract with the cut-and-sew factory). It's the document a manufacturer can quote against and start sampling from.
+
+Required sections:
+
+```markdown
+# {{Brand}} — {{Occasion}} · Tech Pack
+
+*Produced from BRIEF.md · Date: {{today}} · Status: concept (not approved for bulk)*
+
+## Production approach
+- **Construction tier:** {{premium / mid / value — based on the brief's quality register}}
+- **Country of make:** {{suggested COO based on materials — Portugal for premium knits, US for heavyweight tees, Vietnam for technical outerwear, etc.}}
+- **Sampling:** {{1 sample per SKU per colorway, 2-week turnaround target}}
+
+## Per-SKU spec sheets
+
+### SKU 01 — {{Piece name}}
+- **Fabric:** {{exact weight + composition — "320 GSM 100% organic cotton, garment-dyed loopback"}}
+- **Mill reference:** {{placeholder — "to be sourced from heritage Italian/Japanese/American mill"}}
+- **Fit profile:** {{boxy / cropped / relaxed — from §3 of glossary}}
+- **Size run:** {{XS–XXL standard; or specified buy depth from BRIEF.md `## Commerce`}}
+- **Measurements (Size M, chest-pit-to-pit / body length / sleeve / shoulder):** {{cm — placeholder for designer to fill}}
+- **Seams & construction:** {{from §4 of glossary — flatlock at side seams, bartack at pocket corners, coverstitched hem, etc.}}
+- **Embellishment placements:**
+  - Position 1 (e.g. left chest, 4cm down from collar, 5cm from placket): {{technique from §5/§6 of glossary — "chain-stitch embroidery, 3-thread, tonal cream-on-cream, motif: {{name}}, 8cm wide"}}
+  - Position 2 (e.g. back yoke, centered, 12cm down from collar): {{...}}
+- **Labels:**
+  - Inside-neck: {{satin woven label from §8 of glossary, dimensions, attachment method}}
+  - Sleeve / hem flag: {{if applicable}}
+  - Care label: {{stitched into side seam at hem, regulatory wash + COO info}}
+- **Hardware:** {{horn buttons / corozo / YKK metal zipper / etc. from §8}}
+- **Hangtag:** {{material + dimensions + attachment from §8}}
+- **Packaging:** {{poly bag with woven label / branded box / tissue paper — from Round 3b output}}
+- **Estimated FOB:** {{rough manufacturer-side cost per unit, USD — placeholder for sourcing team}}
+
+### SKU 02 — {{...}}
+{{repeat per piece}}
+
+## Color & material reference
+- **Pantone matches (placeholder):** {{Cream — Pantone 11-0907 TCX; Forest — Pantone 19-5511 TCX; etc.}}
+- **Thread colors:** {{cream chain-stitch thread, yellow chain-stitch thread, etc.}}
+- **Fabric supplier reference numbers:** {{placeholder for designer to source}}
+
+## Bill of materials (rolled up across SKUs)
+| Material | SKUs that use it | Estimated yardage / units per drop |
+|---|---|---|
+| 320 GSM organic cotton loopback | 01, 02 | ~{{yards}} |
+| Heavy cotton piqué | 04 | ~{{yards}} |
+| ... | | |
+
+## Regulatory notes
+- Care label content (wash + COO + fiber composition) must be permanent and bilingual where applicable.
+- All zippers / snaps / hardware lead-content compliant with destination market regulations (CPSIA for US children's lines, REACH for EU, etc.).
+- Tariff classification (HTS code) per garment category to be confirmed by freight forwarder.
+
+## Quality control checkpoints
+- **Pre-production sample (PPS):** approved before bulk cut.
+- **Top-of-production (TOP):** first 10 units inspected before full bulk runs.
+- **AQL inspection:** 2.5 major / 4.0 minor for final shipment.
+
+## Open questions for the manufacturer
+- ...
+- ...
+```
+
+This is **explicitly a concept tech pack** — measurements, mill references, and Pantone codes are placeholders for the user's designer / sourcing team to fill in for real production. The skill's job is to produce a document with the right *structure* and the right *technical vocabulary* (pulled from `glossary.md`), not to invent measurements that don't apply to the actual brand.
+
+### 5b — `INDEX.md`
 
 Gallery linking the brief sections to each generated artifact, with the prompt and Higgsfield job ID for each. Format:
 
@@ -529,7 +772,7 @@ To re-display any artifact: `mcp__higgsfield__job_display` with the job ID.
 ... etc. for each artifact ...
 ```
 
-### 5b — Download fonts
+### 5c — Download fonts
 
 Pick a **display family** and a **label/mono family** based on the brief's `## Typography` section. The choice is brand-driven — examples of valid pairings, not a prescription:
 
@@ -554,16 +797,30 @@ curl -sL -o fonts/<MonoFamily>.ttf \
 
 The HTML loads them via Google Fonts CDN; the `fonts/` directory is only required by `build_og.py` (which reads TTFs directly via PIL).
 
-### 5c — `index.html` (branded single-page site)
+### 5d — `index.html` (branded single-page site)
 
 **Structural sections (top to bottom). Each section has a *role*; the brand picks the noun-phrase title to put on it.**
 
 1. **Optional top ornament** — a thin marquee strip / sponsor band / news-ticker / data-band, only if it fits the brand vibe. Skip for restrained / luxury brands; include for sport / festival / streetwear.
 2. **Sticky nav** — `[real brand logo SVG] | [property name set in the brief's display family]` on the left; small mono stamp on the right (coordinates, date, edition number — whatever the brief established).
-3. **Full-bleed hero** — Round 6 image at native aspect (typically 16:9), with:
+3. **Full-bleed hero** — Round 7 hero video at native 16:9 (autoplay, muted, loop, `playsinline`), with the Round 6 still as the `poster` attribute so the hero shows instantly on slow connections. Overlaid:
    - Small mono kicker (top-left or top-center)
    - Title in the brief's display family (bottom-left over a gentle gradient overlay)
    - Up to 3 short mono meta chips beneath the title
+
+   HTML pattern:
+   ```html
+   <header class="hero">
+     <video autoplay muted loop playsinline poster="<Round 6 still CDN URL>">
+       <source src="<Round 7 video CDN URL>" type="video/mp4">
+     </video>
+     <div class="hero-overlay">
+       <p class="kicker">...</p>
+       <h1>...</h1>
+       <ul class="meta-chips">...</ul>
+     </div>
+   </header>
+   ```
 4. **§01 Range** — the line sheet (Round 4 image), full-width inside a tonal frame, single-line mono caption below.
 5. **§02 Featured pieces** — 2- or 3-column grid of product hero cards. Each card = a Round 3 mockup + a spec sheet (mono key/value pairs).
 6. **§03 Lookbook** — Round 5 portraits in a 1- or 2-column grid. Often a darker / inverted-palette section so the figures pop.
@@ -630,7 +887,7 @@ Letter-spacing for tracked all-caps mono labels: `0.18em–0.28em` (tighter for 
 <meta name="theme-color" content="{{forest or hero color}}">
 ```
 
-### 5d — `build_og.py` (OG card builder)
+### 5e — `build_og.py` (OG card builder)
 
 A self-contained Python script that composites the OG card from one of the generated assets. Drop this file in the working folder, then run:
 
@@ -732,11 +989,11 @@ print(f"wrote {OUT}")
 
 After writing the file, run `uv run --with Pillow build_og.py` and confirm `og.png` is generated.
 
-### 5e — Important: don't download generated images
+### 5f — Important: don't download generated images or videos
 
 Higgsfield's CDN serves the 9 + 1 generated images directly. **Embed them in the HTML by CDN URL** — don't `curl` them into the repo. The site references `https://d8j0ntlcm91z4.cloudfront.net/...` URLs and stays small. The only image committed to the repo is `og.png` (which is built from one CDN asset by `build_og.py`).
 
-### 5f — `README.md` and `.gitignore`
+### 5g — `README.md` and `.gitignore`
 
 Always add a brief `README.md` explaining the deliverable and a `.gitignore` (default: `.DS_Store .vercel/ __pycache__/ *.pyc .venv/ venv/ node_modules/`).
 
