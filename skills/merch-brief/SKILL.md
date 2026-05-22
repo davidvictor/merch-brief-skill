@@ -327,7 +327,17 @@ The gridded composite. One image, all SKUs visible. References all Round 3 mocku
 **Prompt template:**
 > Tech-pack flat-lay line sheet of the {{brand}} {{occasion}} merch capsule on a {{neutral backdrop color from brief}} seamless backdrop, soft top-down studio light, catalog presentation. Show {{N}} garments gridded in a {{4-across-by-2-down / 3×3 / etc.}} layout: {{list each piece with one-line spec}}. Each garment sits with even spacing, faint mono spec text below it (fabric · colorway · embellishment hint). No models, no hands, subtle drop shadows only. Wholesale line sheet quality.
 
-See [`examples/line-sheet-stagecoach.png`](examples/line-sheet-stagecoach.png) as a structural reference. Read it for: the **4×2 grid**, the **mono spec callouts** under each piece (3 short lines of fabric · color · embellishment), the **even spacing** and **single neutral backdrop**, the **top-down light** with no harsh shadows, and the **range across silhouettes** (a knit, a shirt, a tee, an outerwear piece, a footwear piece, an accessory). Ignore the specific palette, specific SKUs, and specific embellishments — those are that brand's, not the template's. The clarity, hierarchy, and restraint is the target.
+**Target structure** for the line sheet image — read this carefully and bake every element into the prompt:
+
+- **Grid:** clean and regular. 4-across-by-2-down for 8 SKUs; 3×3 for 9; 3×2 for 6. Even spacing, generous margins around each piece.
+- **Backdrop:** a single neutral tone from the brief's palette (cream, bone, paper, off-white, etc.). No textures, no gradients.
+- **Light:** even top-down studio light, soft drop shadows only, no harsh raking.
+- **Spec callouts:** under each piece, three short lines of mono text — `fabric · weight`, `colorway`, `embellishment hint`. Faint and tonal, never loud.
+- **Range across silhouettes:** the cells should cover different garment categories — a knit, a button-up, a tee, an outerwear piece, a footwear piece, an accessory or hat, plus whatever pieces are specific to the brief. Don't put eight tees in the grid.
+- **Hierarchy:** all garments at the same scale and centered in their cells. No piece is hero in the line sheet — that's what the product hero shots are for.
+- **Restraint:** zero stylization on the image itself. The garments do the talking; the grid is utility infrastructure.
+
+The reference quality bar: a wholesale tech-pack page from a heritage merch agency — clean enough to send to a manufacturer.
 
 Fire as a single call. **Poll to completion.**
 
@@ -804,7 +814,7 @@ If the user wants a re-rendered OG card after a brand change, **regenerate** by 
 → brand="Red Bull Air Race", brand_url="https://www.redbull.com", occasion="Venice Beach edition", creative_direction preserved, tier=standard, **ship=true**.
 
 > "Stagecoach Archive Edition merch — country heritage, warm wash, derive a palette from the brand."
-→ brand="Stagecoach", occasion="Archive Edition", creative_direction preserved, tier=standard. `examples/line-sheet-stagecoach.png` is a *structural* reference for any tier=standard line sheet: read it for the **4×2 grid**, **mono spec callouts under each piece**, **single neutral backdrop**, **even spacing**, **even top-down light**, and **range across silhouettes** (knit / shirt / tee / outerwear / footwear / accessory). The specific palette and SKUs are Stagecoach's — your brief picks its own.
+→ brand="Stagecoach", occasion="Archive Edition", creative_direction preserved, tier=standard.
 
 > "Tour merch for an indie band — backstage / road-case aesthetic. Deluxe."
 → brand="<artist name>", occasion="<tour name> Tour 2026", creative_direction="backstage / road-case aesthetic", tier=deluxe.
