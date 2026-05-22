@@ -133,6 +133,20 @@ Required sections (markdown):
 The {{brand}} mark and wordmark in generated images will be approximate — these are concept renders for direction approval. Real artwork applied by a designer with the official brand kit.
 ```
 
+### Brief → glossary section map
+
+When filling each `BRIEF.md` section, pull vocabulary from these specific [`glossary.md`](./glossary.md) sections:
+
+| BRIEF.md section | Glossary sections to pull from |
+|---|---|
+| `## Palette` | §7 (Washes & finishes) — for surface-treatment vocabulary that accompanies color names |
+| `## Typography` | §9 (Typography & display) — display family, label/mono family, wordmark treatment |
+| `## Garment language` | §1 (Fabric weights), §2 (Weaves & knit structures), §3 (Fits & silhouettes), §7 (Washes & finishes) |
+| `## Motif library` | freeform — pull light rendering vocabulary from §5 (Embroidery) / §6 (Print methods) when describing how each motif lives on the garment |
+| `## Embellishment plan` | §5 (Embroidery), §6 (Print methods), §8 (Trims & hardware) |
+| `## Range plan` | per row: §1 (weight), §2 (weave), §3 (fit), §5/§6 (embellishment), §7 (wash) |
+| `## Lookbook & context direction` | §10 (Photography & lighting) for the lighting + lens grammar |
+
 **Gate:** Show the brief to the user and get sign-off before Phase 3. Generation costs credits — don't burn them on the wrong direction.
 
 ---
@@ -232,6 +246,7 @@ Default to **one male + one female** so the lookbook can show the line on both. 
 - **Aspect:** `1:1` (clean square reference, no body context)
 - **Cost:** ~2 credits each
 - **Count:** 2–4 per character × 2 characters by tier (just enough variety in angle/expression to give the compositing room to work — we are NOT training Soul Characters here)
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §10 (Photography & lighting) for the studio lighting clause and backdrop tone.
 
 For each character, use the *same* identity description across all their refs — vary only angle and expression. Keep the descriptions concrete: age, build, hair color/length, skin tone, distinguishing features, vibe. **Pull the character archetype from the brief's audience and brand world** — Stagecoach characters look different from Burberry characters.
 
@@ -249,6 +264,7 @@ Generate the physical world(s) the line lives in. **These plates have no garment
 - **Model:** `nano_banana_pro`
 - **Aspect:** `16:9` (so they double as hero-backdrop candidates)
 - **Cost:** ~2 credits each
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §10 (Photography & lighting) — pull time-of-day, light direction, film stock, focal-length equivalent, grain notes. This round IS the lighting grammar reference for Rounds 5 and 6.
 
 Each location plate should be a single specific place at a single specific time of day, captured the way a photographer scouts it: clean composition, all the environmental cues present, but no action happening yet.
 
@@ -267,6 +283,7 @@ The design system, rendered as physical artifacts. These set the visual language
 - **Aspect:** `1:1`
 - **Cost:** ~2 credits each
 - **Count:** 2–4 mnemonics depending on tier
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §1–§2 (material — fabric weight + weave/knit), §5 (Embroidery) or §6 (Print methods) for the rendering technique, §8 (Trims & hardware — woven label / jacron / leather patch / hangtag), §9 (Typography & display — wordmark treatment), §10 (Photography & lighting — light direction, raked vs top-down).
 
 Each mnemonic is a single artifact shown at macro scale on a clean ground. Pull from the brief's `## Motif library`, `## Embellishment plan`, and `## Typography` sections. A representative set:
 
@@ -291,6 +308,7 @@ Each SKU as an individual flat-lay product hero on a clean seamless backdrop. **
 - **Cost:** ~2 credits each
 - **Count:** 4 / 6 / 9 SKUs by tier
 - **References:** pass the relevant Round 2 mnemonic job_id(s) via `medias`
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §1 (Fabric weights — oz / GSM), §2 (Weaves & knit structures), §3 (Fits & silhouettes — boxy / cropped / oversized / raglan / etc.), §4 (Seams & construction — flatlock / bartack / topstitch / single-needle / piping), §5 (Embroidery technique), §6 (Print method), §7 (Washes & finishes — garment-dyed / pigment / sun-faded / etc.), §8 (Trims & hardware — labels, patches, closures), §10 (Photography & lighting — soft directional light clause). **Pick 2–4 specific terms per prompt clause** — don't keyword-stuff or the model produces a confused composite.
 
 Pull from `## Range plan` in the brief — generate one mockup per row, ordered hero pieces first.
 
@@ -323,6 +341,7 @@ The gridded composite. One image, all SKUs visible. References all Round 3 mocku
 - **Aspect:** `4:3`
 - **Cost:** ~2 credits
 - **References:** all Round 3 mockup job_ids in `medias[]`
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §1–§2 (vocabulary for the mono spec callouts under each piece — `fabric · weight` line), §7 (backdrop tone description if the brief calls for a specific wash-coded neutral). The composition itself is described prose-style in the target-structure block below — not pulled from the glossary.
 
 **Prompt template:**
 > Tech-pack flat-lay line sheet of the {{brand}} {{occasion}} merch capsule on a {{neutral backdrop color from brief}} seamless backdrop, soft top-down studio light, catalog presentation. Show {{N}} garments gridded in a {{4-across-by-2-down / 3×3 / etc.}} layout: {{list each piece with one-line spec}}. Each garment sits with even spacing, faint mono spec text below it (fabric · colorway · embellishment hint). No models, no hands, subtle drop shadows only. Wholesale line sheet quality.
@@ -358,6 +377,7 @@ This is the round that needed the prior context most — without it, the lookboo
 - **Count:** 1 / 2 / 3 by tier
 - **References:** Cast portrait + Round 3 mockup + Round 1 location (all in `medias[]`)
 - **Cast assignment:** alternate which character wears which piece. Don't put the menswear hero piece on the female character and vice versa unless the line is genuinely unisex.
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §10 (Photography & lighting) — the lighting + film stock + focal-length clauses must echo the Round 1 location plate the shot is set in. Everything else (fabric, fit, embellishments) is carried into the composite by the Round 3 mockup reference in `medias[]` and doesn't need to be re-described in prose.
 
 **Prompt template:**
 > Editorial lookbook portrait, {{full-body / three-quarter / mid-shot}}. The character from the portrait reference wears the {{specific Round 3 garment}} in {{colorway}}, styled with {{trouser/shoe/accessory}}. Setting: the {{Round 1 location — described again concretely, not just referenced}}. {{Lighting matching the Round 1 plate — golden hour low side-light, hangar fluorescent overhead, etc.}}. Shot on {{35mm film stock / digital with medium-format feel}}, {{focal length}} equivalent compression. Subject {{posture / gaze}}. The {{garment}} is the hero; every embellishment readable. Composite the three references so the person matches the portrait, the garment matches the mockup, and the environment matches the location plate.
@@ -389,6 +409,7 @@ The cinematic 16:9 wide that anchors the website. Composites the same three refe
 - **Aspect:** `16:9`
 - **Cost:** ~2 credits
 - **References:** Cast portrait (of the hero-piece wearer) + Round 1 best location + Round 3 hero-piece mockup (all in `medias[]`)
+- **Vocabulary sources** ([`glossary.md`](./glossary.md)): §10 (Photography & lighting) — lighting + film stock + focal-length clauses must echo the chosen Round 1 location plate. The hero garment language is carried by the Round 3 mockup reference and doesn't need re-describing.
 
 **Hero composition rule (unchanged from prior version of this skill):**
 
