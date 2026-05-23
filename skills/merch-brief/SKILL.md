@@ -759,7 +759,7 @@ For the site nav and any "real-brand" lockups, use the **actual** logo file, not
 
 ## Phase 5 — Compose the deliverable
 
-In the working folder, write these files plus the logo and fonts:
+In the working folder, write these files plus the logo:
 
 ```
 ~/Documents/merch-briefs/<brand-slug>-<YYYY-MM-DD>/
@@ -767,13 +767,12 @@ In the working folder, write these files plus the logo and fonts:
 ├── TECHPACK.md        ← manufacturer-side production spec (this phase)
 ├── INDEX.md           ← gallery of all job IDs + prompts (incl. video clips)
 ├── index.html         ← branded single-page site (video embedded in hero)
-├── og.png             ← 1200×630 social share card
-├── build_og.py        ← script that builds og.png
-├── logo-<brand>.svg   ← from Phase 4
-└── fonts/             ← brand-chosen display + label TTFs (see 5b for selection)
-    ├── <DisplayFamily-Style>.ttf
-    └── <MonoFamily>.ttf
+├── og.png             ← 1200×630 social share card (= cropped Round 6 hero still)
+├── build_og.py        ← tiny script that builds og.png
+└── logo-<brand>.svg   ← from Phase 4
 ```
+
+The site loads display + label fonts via the **Google Fonts CDN** in the HTML's `<link>` tag — no local TTFs needed. The OG card is just a cropped version of the hero still, so no fonts are needed for the build step either.
 
 ### 5a — `TECHPACK.md` (manufacturer-side production spec) *(optional — only if selected in scope gate)*
 
@@ -867,7 +866,7 @@ To re-display any artifact: `mcp__higgsfield__job_display` with the job ID.
 ... etc. for each artifact ...
 ```
 
-### 5c — Download fonts
+### 5c — Pick fonts for the site
 
 Pick a **display family** and a **label/mono family** based on the brief's `## Typography` section. The choice is brand-driven — examples of valid pairings, not a prescription:
 
@@ -878,19 +877,15 @@ Pick a **display family** and a **label/mono family** based on the brief's `## T
 | Luxury / restraint | A high-contrast serif (e.g. Editorial New, Canela) | A geometric sans (e.g. Söhne) |
 | Streetwear / festival | A heavy display sans (e.g. Druk Wide, ABC Diatype) | A condensed mono (e.g. Berkeley Mono) |
 
-Use **only Google Fonts or other OFL-licensed families** so the TTFs can be downloaded for the OG builder and the site can load them via Google Fonts CDN.
+Use **Google Fonts** families so the HTML can load them via the standard `<link>` CDN tag — no local TTFs required:
 
-Download the two chosen TTFs into `fonts/` once (paths vary by family — search `https://github.com/google/fonts/tree/main/ofl/<family-slug>`):
-
-```bash
-mkdir -p fonts
-curl -sL -o fonts/<DisplayFamily-Style>.ttf \
-  "https://github.com/google/fonts/raw/main/ofl/<family-slug>/<DisplayFamily-Style>.ttf"
-curl -sL -o fonts/<MonoFamily>.ttf \
-  "https://github.com/google/fonts/raw/main/ofl/<mono-slug>/<MonoFamily>.ttf"
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=<DisplayFamily>:ital,wght@0,400;0,900;1,700;1,900&family=<MonoFamily>:wght@400;500;700&display=swap" rel="stylesheet">
 ```
 
-The HTML loads them via Google Fonts CDN; the `fonts/` directory is only required by `build_og.py` (which reads TTFs directly via PIL).
+The OG card doesn't render any text, so no font files are needed for the build step. Anything outside Google Fonts is fine for the site if you self-host it, but Google Fonts is the path of least resistance.
 
 ### 5d — `index.html` (branded single-page site)
 
@@ -984,105 +979,44 @@ Letter-spacing for tracked all-caps mono labels: `0.18em–0.28em` (tighter for 
 
 ### 5e — `build_og.py` (OG card builder)
 
-A self-contained Python script that composites the OG card from one of the generated assets. Drop this file in the working folder, then run:
+The OG card is **just the Round 6 hero still, resized and center-cropped to 1200×630**. No text overlay, no left band, no ornaments. The image is the message. This keeps the OG card consistent with what the user already sees on the website hero and removes any drift between rendered text and the rest of the brand.
 
-```bash
-uv run --with Pillow build_og.py
-```
-
-Template (the structure stays constant across brands; the palette RGB tuples, font filenames, title strings, and bottom-strip content all come from the brief):
+A tiny Python script — drop it in the working folder, run with `uv run --with Pillow build_og.py`:
 
 ```python
-"""Build og.png (1200×630) from a generated range-grid asset.
+"""Build og.png (1200×630) from the Round 6 hero still.
 
-Layout is constant across brands:
-  - Right column (~64% width):  range-grid asset, cover-cropped
-  - Left column (~36% width):   solid hero-color band, stacked display title
-  - Top edge:                   thin accent stripe
-  - Bottom-right strip:         optional mono ornament strip
-The palette RGB tuples and font paths below are populated from the brief.
+The OG card is just a cropped version of the hero. No text overlay.
 """
 import io, urllib.request
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 ROOT = Path(__file__).parent
-FONT_DIR = ROOT / "fonts"
 OUT = ROOT / "og.png"
-ASSET_URL = "<line-sheet CDN URL from Round 4>"
-
-# Brand palette as RGB tuples — copy from BRIEF.md's ## Palette section.
-# Role names match the CSS tokens in index.html (see Phase 5c).
-BG       = (___, ___, ___)  # primary neutral / page background
-HERO     = (___, ___, ___)  # brand hero color (left band fill)
-ACCENT   = (___, ___, ___)  # single accent (top stripe, kicker label)
-INK      = (___, ___, ___)  # body / text on light backgrounds
-HARDWARE = (___, ___, ___)  # neutral grey, secondary mono text
+HERO_URL = "<Round 6 hero still CDN URL>"
 
 W, H = 1200, 630
-LEFT_W = 432  # left band width
 
-# Download the line-sheet asset
-with urllib.request.urlopen(ASSET_URL, timeout=30) as r:
-    asset = Image.open(io.BytesIO(r.read())).convert("RGB")
+with urllib.request.urlopen(HERO_URL, timeout=30) as r:
+    hero = Image.open(io.BytesIO(r.read())).convert("RGB")
 
-canvas = Image.new("RGB", (W, H), BG)
-
-# Right column: line sheet, cover-cropped
-right_w = W - LEFT_W
-src_w, src_h = asset.size
-scale = max(right_w / src_w, H / src_h)
+# Cover-crop to 1200×630 (16:9 hero ≈ 1.78:1; OG is 1.905:1, so a slight
+# horizontal crop happens. Center the crop.)
+src_w, src_h = hero.size
+scale = max(W / src_w, H / src_h)
 new_w, new_h = int(src_w * scale), int(src_h * scale)
-scaled = asset.resize((new_w, new_h), Image.LANCZOS)
-x0, y0 = (new_w - right_w) // 2, (new_h - H) // 2
-canvas.paste(scaled.crop((x0, y0, x0 + right_w, y0 + H)), (LEFT_W, 0))
+scaled = hero.resize((new_w, new_h), Image.LANCZOS)
+x0, y0 = (new_w - W) // 2, (new_h - H) // 2
+og = scaled.crop((x0, y0, x0 + W, y0 + H))
 
-draw = ImageDraw.Draw(canvas)
-
-# Left band (solid hero color) + top accent stripe
-draw.rectangle([(0, 0), (LEFT_W, H)], fill=HERO)
-draw.rectangle([(0, 0), (W, 6)], fill=ACCENT)
-
-# Optional decorative seam between bands (dashed accent dots) — drop if brand is restrained
-for y in range(20, H - 20, 12):
-    draw.rectangle([(LEFT_W - 1, y), (LEFT_W, y + 6)], fill=ACCENT)
-
-# Fonts — paths are whatever was downloaded in Section 5b. Use the brief's families.
-font_display_lg = ImageFont.truetype(str(FONT_DIR / "<DisplayFamily-Style>.ttf"), 92)
-font_display_sm = ImageFont.truetype(str(FONT_DIR / "<DisplayFamily-Style>.ttf"), 44)
-font_sub        = ImageFont.truetype(str(FONT_DIR / "<DisplaySub-Style>.ttf"), 26)
-font_mono       = ImageFont.truetype(str(FONT_DIR / "<MonoFamily>.ttf"), 14)
-font_mono_sm    = ImageFont.truetype(str(FONT_DIR / "<MonoFamily>.ttf"), 11)
-
-# Top mono kicker (two lines)
-draw.text((40, 40), "<BRAND> · <PROPERTY>", font=font_mono, fill=ACCENT)
-draw.text((40, 64), "<LOCATION> · <YEAR>",  font=font_mono, fill=BG)
-
-# Stacked display title — fill with BG so it reads bright on the HERO band
-draw.text((40, 160), "<TITLE LINE 1>", font=font_display_lg, fill=BG)
-draw.text((40, 252), "<TITLE LINE 2>", font=font_display_lg, fill=BG)
-draw.text((40, 344), "<SMALLER LINE>", font=font_display_sm, fill=ACCENT)
-
-# Subhead — short, factual, two lines max
-draw.text((40, 400), "<subhead line 1>", font=font_sub, fill=BG)
-draw.text((40, 430), "<subhead line 2>", font=font_sub, fill=BG)
-
-# Bottom mono stamp (coordinates / tier / SKU count)
-draw.text((40, H - 56), "<COORDINATES OR STAMP LINE>",       font=font_mono_sm, fill=HARDWARE)
-draw.text((40, H - 38), "<TIER> · <SKU COUNT> PIECE CAPSULE", font=font_mono_sm, fill=BG)
-
-# Optional bottom-right ornament strip — sponsor labels, dates, edition marks, etc.
-# Match whatever the index.html top ornament uses (or drop entirely for restrained brands).
-draw.rectangle([(LEFT_W, H - 26), (W, H)], fill=HERO)
-draw.text((LEFT_W + 16, H - 19),
-    "<short mono ornament — separated by ·>",
-    font=font_mono_sm, fill=BG)
-
-canvas.save(OUT, format="PNG", optimize=True)
+og.save(OUT, format="PNG", optimize=True)
 print(f"wrote {OUT}")
 ```
 
-After writing the file, run `uv run --with Pillow build_og.py` and confirm `og.png` is generated.
+After writing the file, run `uv run --with Pillow build_og.py` and confirm `og.png` lands in the working folder. The whole thing is ~25 lines of Python, no fonts dependency.
+
+If the brief explicitly asks for an OG card *with* text overlay (e.g. for a launch announcement that needs the date + CTA visible in share previews), that's a deliberate override — but the default is image-only.
 
 ### 5f — Important: don't download generated images or videos
 
